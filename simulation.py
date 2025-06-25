@@ -50,8 +50,9 @@ class MMSSimulator:
         while t < sim_time:
             arrivals.append(t)
             t += self._exp(self.lambda_rate)
+  
 
-        # Kolejka serwerów: (next_free_time, server_id)
+        # Kolejka serwerów: Struktura to krotka -> (next_free_time, server_id)
         servers_heap: list[tuple[float, int]] = [(0.0, i) for i in range(self.n_servers)]
         heapq.heapify(servers_heap)
 

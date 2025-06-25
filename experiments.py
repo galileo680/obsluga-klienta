@@ -2,7 +2,7 @@
 import pandas as pd
 from simulation import MMSSimulator
 from models import mm1, mms
-from analytics import ttest, regression
+from analytics import ttest, mannwhitney, regression
 
 def run():
     configs = [
@@ -14,6 +14,9 @@ def run():
     for cfg in configs:
         sim = MMSSimulator(cfg["lambda_rate"], cfg["mu"], cfg["n_servers"], seed=42)
         df = sim.run(sim_time=8*60)
+
+        print(df.head())
+
         wait_mean = df["wait_time"].mean()
         theo = mm1(cfg["lambda_rate"], cfg["mu"]) if cfg["n_servers"]==1 else mms(cfg["lambda_rate"], cfg["mu"], cfg["n_servers"])
         rows.append({**cfg, "wait_sim": wait_mean, "wait_theory": theo["Wq"]})
@@ -30,7 +33,8 @@ def run():
     sim2 = MMSSimulator(configs[1]["lambda_rate"], configs[1]["mu"], configs[1]["n_servers"], seed=123)\
         .run(8*60)["wait_time"]
 
-    print("\nT‑test:", ttest(sim1, sim2))
+    print("\nT-test:", ttest(sim1, sim2))
+    print("\nTest U Manna-Whitneya:", mannwhitney(sim1, sim2))
 
     # Regresja
     summary["rho"] = summary["lambda_rate"]/(summary["n_servers"]*summary["mu"])
